@@ -36,7 +36,7 @@ int main(int argc, char **argv)
   const int min_gap_samples = (int)(sample_rate * min_gap_sec);
 
   // the starting and ending points of the most recent track read or being read
-  int start, end;
+  int start = 0, end = 0;
 
   FILE* input = fopen("audio.dat", "r");
 
@@ -45,11 +45,17 @@ int main(int argc, char **argv)
       fprintf(stderr, "Could not open audio.dat\n");
       return 1;
     }
+
+  fprintf(stderr, "State values: GAP=0, TRACK=1, ZEROS=2\n");
+  fprintf(stderr, "%4s %7s %3s %7s %7s %7s %3s\n",
+	  "DATA", "INDEX", "OLD", "START", "END", "COUNT", "NEW");
   
   // the current sample value
   int value;
   while (fscanf(input, "%d", &value) > 0)
     {
+      fprintf(stderr, "%4d %7d %3d ", value, count, curr);
+      
       switch (curr)
 	{
 	case GAP:
@@ -87,6 +93,8 @@ int main(int argc, char **argv)
 	}
 
       count++;
+
+      fprintf(stderr, "%7d %7d %7d %3d\n", start, end, count, curr); 
     }
 
   fclose(input);
